@@ -1,3 +1,10 @@
+# Grief-Porter
+
+people who move bricks should not yield
+
+## Config
+
+```json
 [
   {
     "sources": [
@@ -14,3 +21,18 @@
     "manifest": "my.register.com/foo/prometheus:v2.18.2-multi"
   }
 ]
+```
+
+## Usage
+
+serially execute project operation
+
+```bash
+make run-serial
+```
+
+parallels execute project operation
+
+```bash
+make run-parallels
+```
