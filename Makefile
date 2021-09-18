@@ -3,3 +3,6 @@ run-serial:
 
 run-parallels:
 	go run . -parallels
+
+build:
+	go build -o goporter .
