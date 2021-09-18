@@ -7,18 +7,27 @@ package main
 import (
 	"encoding/json"
 	"flag"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
 	"sync"
 )
 
-var parallels = flag.Bool("parallels", false, "parallels make projects")
+var (
+	parallels  = flag.Bool("parallels", false, "parallels make projects")
+	configPath = flag.String("config", "", "json config used by goporter")
+)
 
 func main() {
 	flag.Parse()
 
-	config, err := os.Open("config.json")
+	if len(*configPath) == 0 {
+		fmt.Fprintf(os.Stderr, "'--config' can not be empty")
+		os.Exit(1)
+	}
+
+	config, err := os.Open(*configPath)
 	if err != nil {
 		panic(err)
 	}

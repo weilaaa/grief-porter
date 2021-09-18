@@ -2,6 +2,15 @@
 
 people who move bricks should not yield
 
+## Quick Start
+1. download specified binary from [release](https://github.com/weilaaa/grief-porter/releases)
+2. `chmod +x ./goporter-*`
+3. `mv ./goporter-* /usr/local/bin/goporter`
+4. use it
+```
+goporter --config=./config.json
+```
+
 ## Config
 
 ```json
@@ -23,7 +32,7 @@ people who move bricks should not yield
 ]
 ```
 
-## Usage
+## Local Usage
 
 serially execute project operation
 
