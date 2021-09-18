@@ -1,0 +1,16 @@
+[
+  {
+    "sources": [
+      {
+        "addr": "prom/prometheus:v2.18.2@sha256:cba0deaa490dea181e59df5ce8c10a0eb2c1aa0196f26c7eaade947448ae393a",
+        "remark": "linux/arm64",
+        "new_tag": "harbor.cloud.netease.com/qztest/prometheus:v2.18.2-arm64"
+      },
+      {
+        "addr": "prom/prometheus:v2.18.2@sha256:9564f635c7d83bd242589842741bac3cf2746e9f94c250384850cf18ae09999d",
+        "new_tag": "harbor.cloud.netease.com/qztest/prometheus:v2.18.2-amd64"
+      }
+    ],
+    "manifest": "harbor.cloud.netease.com/qztest/prometheus:v2.18.2-multi"
+  }
+]
