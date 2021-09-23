@@ -39,6 +39,10 @@ goporter --config=./config.json
 ]
 ```
 
+## What is multi arch images
+
+you can find tutorials [here](https://github.com/weilaaa/grief-porter/blob/main/docs/multi-arch-image.md)
+
 ## Local Usage
 
 serially execute project operation
