@@ -2,11 +2,18 @@
 
 people who move bricks should not yield
 
+## Requirement
+
+1. if you want to use `docker manifest` feature, must [open it](https://docs.docker.com/engine/reference/commandline/manifest/) at first
+2. if you want to push image to private register, must `docker login` at first
+
 ## Quick Start
+
 1. download specified binary from [release](https://github.com/weilaaa/grief-porter/releases)
 2. `chmod +x ./goporter-*`
 3. `mv ./goporter-* /usr/local/bin/goporter`
 4. use it
+
 ```
 goporter --config=./config.json
 ```
