@@ -17,7 +17,6 @@ limitations under the License.
 package main
 
 import (
-	"fmt"
 	"os"
 	"os/exec"
 )
@@ -30,7 +29,7 @@ func doExec(cmd, dir string) error {
 	_cmd.Stdout = os.Stdout
 	_cmd.Stderr = os.Stderr
 
-	fmt.Printf("\n %c[%d;%d;%dm%s%c[0m\n", 0x1B, 0, 0, 34, _cmd.String(), 0x1B)
+	colorPrint(blue, _cmd.String())
 
 	// block until cmd execute completed
 	return _cmd.Run()

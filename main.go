@@ -9,7 +9,6 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"sync"
 )
@@ -61,7 +60,7 @@ func parallelsExecuteAll(bricks []brick) {
 	for _, b := range bricks {
 		go func(brick brick) {
 			if err := brick.moving(); err != nil {
-				log.Printf("brick moving failed, brick: %v, err: %v \n", brick, err)
+				colorPrint(red, "brick moving failed, brick: %v, err: %v", brick, err)
 			}
 			w.Done()
 		}(b)
@@ -73,7 +72,7 @@ func parallelsExecuteAll(bricks []brick) {
 func serialExecuteAll(bricks []brick) {
 	for _, b := range bricks {
 		if err := b.moving(); err != nil {
-			log.Printf("brick moving failed, brick: %v, err: %v \n", b, err)
+			colorPrint(red, "brick moving failed, brick: %v, err: %v", b, err)
 			continue
 		}
 	}
