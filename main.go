@@ -60,7 +60,7 @@ func parallelsExecuteAll(bricks []brick) {
 	for _, b := range bricks {
 		go func(brick brick) {
 			if err := brick.moving(); err != nil {
-				colorPrint(red, "brick moving failed, brick: %v, err: %v", brick, err)
+				colorPrint(red, "brick moving failed, brick: %+v, err: %v", brick, err)
 			}
 			w.Done()
 		}(b)
@@ -72,7 +72,7 @@ func parallelsExecuteAll(bricks []brick) {
 func serialExecuteAll(bricks []brick) {
 	for _, b := range bricks {
 		if err := b.moving(); err != nil {
-			colorPrint(red, "brick moving failed, brick: %v, err: %v", b, err)
+			colorPrint(red, "brick moving failed, brick: %+v, err: %v", b, err)
 			continue
 		}
 	}
