@@ -145,7 +145,6 @@ type descriptor struct {
 
 func rebuildSource(b *brick, m *manifest) {
 	sources := make([]*source, 0, len(m.images))
-	rawSource := b.Sources[0]
 
 	for i, img := range m.images {
 		arch, ok := img.Descriptor.Platform["architecture"]
@@ -155,7 +154,7 @@ func rebuildSource(b *brick, m *manifest) {
 
 		s := &source{}
 		s.Addr = img.Ref
-		s.NewTag = fmt.Sprintf("%v-%v-%v", rawSource.Addr, arch, i)
+		s.NewTag = fmt.Sprintf("%v-%v-%v", b.Manifest, i, arch)
 		sources = append(sources, s)
 	}
 
