@@ -1,0 +1,18 @@
+[
+  {
+    "sources": [
+      {
+        "addr": "golang:1.17",
+        "platform": "amd64",
+        "new_tag": "registry.self/weilaaa/golang:1.17-amd64"
+      },
+      {
+        "addr": "golang:1.17",
+        "platform": "arm64",
+        "new_tag": "registry.self/weilaaa/golang:1.17-amd64"
+      }
+    ],
+    "auto": true,
+    "manifest": "registry.self/weilaaa/golang:1.17-multi"
+  }
+]

@@ -20,21 +20,77 @@ goporter --config=./config.json
 
 ## Config
 
+- auto move all images under given manifest
+> amend means 'docker create manifest A B C --amend'
 ```json
 [
   {
     "sources": [
       {
-        "addr": "prom/prometheus:v2.18.2@sha256:cba0deaa490dea181e59df5ce8c10a0eb2c1aa0196f26c7eaade947448ae393a",
-        "remark": "linux/arm64",
-        "new_tag": "my.register.com/foo/prometheus:v2.18.2-arm64"
-      },
-      {
-        "addr": "prom/prometheus:v2.18.2@sha256:9564f635c7d83bd242589842741bac3cf2746e9f94c250384850cf18ae09999d",
-        "new_tag": "my.register.com/foo/prometheus:v2.18.2-amd64"
+        "addr": "golang:1.17"
       }
     ],
-    "manifest": "my.register.com/foo/prometheus:v2.18.2-multi"
+    "amend": true,
+    "auto": true,
+    "manifest": "registry.self/weilaaa/golang:1.17"
+  }
+]
+```
+
+- general move will lift given specified images into one manifest
+```json
+[
+  {
+    "sources": [
+      {
+        "addr": "golang:1.17@sha256:d860e175278037ee2429fecb1150bf10635ff4488c5a6faf695b169bf2c0868f",
+        "new_tag": "registry.self/weilaaa/golang:1.17-amd64"
+      },
+      {
+        "addr": "golang:1.17@sha256:6245b2bee36df7a76a983b7213af5765d6b61fda5a44fbaf95716135af152dac",
+        "new_tag": "registry.self/weilaaa/golang:1.17-amd64-v8"
+      }
+    ],
+    "auto": true,
+    "manifest": "registry.self/weilaaa/golang:1.17-multi"
+  }
+]
+```
+
+- move images by specified platform rather than digest
+```json
+[
+  {
+    "sources": [
+      {
+        "addr": "golang:1.17",
+        "platform": "amd64",
+        "new_tag": "registry.self/weilaaa/golang:1.17-amd64"
+      },
+      {
+        "addr": "golang:1.17",
+        "platform": "arm64",
+        "new_tag": "registry.self/weilaaa/golang:1.17-amd64"
+      }
+    ],
+    "auto": true,
+    "manifest": "registry.self/weilaaa/golang:1.17-multi"
+  }
+]
+```
+
+- move single image to another place without creating manifest
+> you can remark what ever you want in config json file
+```json
+[
+  {
+    "sources": [
+      {
+        "addr": "golang:1.17@sha256:d860e175278037ee2429fecb1150bf10635ff4488c5a6faf695b169bf2c0868f",
+        "remark": "my-image",
+        "new_tag": "registry.self/weilaaa/golang:1.17-amd64"
+      }
+    ]
   }
 ]
 ```

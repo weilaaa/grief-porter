@@ -56,11 +56,6 @@ func singleMove(s *source) error {
 		return fmt.Errorf("pull image %v failed: %v", s.Addr, err)
 	}
 
-	err = s.pull().doExec()
-	if err != nil {
-		return fmt.Errorf("pull image %v failed: %v", s.Addr, err)
-	}
-
 	err = s.tag().doExec()
 	if err != nil {
 		return fmt.Errorf("tag image %v failed: %v", s.Addr, err)

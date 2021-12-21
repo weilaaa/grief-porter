@@ -20,6 +20,9 @@ type brick struct {
 	// Auto will automatically lift all images under this sources
 	// which length should equal 1
 	Auto bool `json:"auto"`
+
+	// Amend will amend remote manifest if true
+	Amend bool `json:"amend"`
 }
 
 // pushManifest would failed if remote register already had such manifest
@@ -42,7 +45,15 @@ func (b *brick) createManifest() error {
 		return fmt.Errorf("digest less than 1, can not create manifest %s", b.Manifest)
 	}
 
-	return makeCmdInstruction("docker manifest create %s%s", b.Manifest, digests).doExec()
+	var err error
+
+	if b.Amend {
+		err = makeCmdInstruction("docker manifest create %s%s --amend", b.Manifest, digests).doExec()
+	} else {
+		err = makeCmdInstruction("docker manifest create %s%s", b.Manifest, digests).doExec()
+	}
+
+	return err
 }
 
 func (b *brick) moving() error {
@@ -101,17 +112,17 @@ func autoBuildSources(b *brick) error {
 		return nil
 	}
 
-	m := &manifest{}
+	m := manifest{images: make([]image, 0)}
 
 	// query manifest of given image
-	err := s.inspect().doExecInto(m)
+	err := s.inspect().doExecInto(&m.images)
 	if err != nil {
 		return err
 	}
 
-	rebuildSource(b, m)
-
 	// rebuild sources for each digest
+	rebuildSource(b, &m)
+
 	return nil
 }
 
@@ -136,7 +147,7 @@ func rebuildSource(b *brick, m *manifest) {
 	sources := make([]*source, 0, len(m.images))
 	rawSource := b.Sources[0]
 
-	for _, img := range m.images {
+	for i, img := range m.images {
 		arch, ok := img.Descriptor.Platform["architecture"]
 		if !ok {
 			continue
@@ -144,7 +155,7 @@ func rebuildSource(b *brick, m *manifest) {
 
 		s := &source{}
 		s.Addr = img.Ref
-		s.NewTag = fmt.Sprintf("%v-%v", rawSource.Addr, arch)
+		s.NewTag = fmt.Sprintf("%v-%v-%v", rawSource.Addr, arch, i)
 		sources = append(sources, s)
 	}
 
