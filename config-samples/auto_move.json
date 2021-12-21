@@ -1,0 +1,12 @@
+[
+  {
+    "sources": [
+      {
+        "addr": "golang:1.17"
+      }
+    ],
+    "amend": true,
+    "auto": true,
+    "manifest": "registry.self/weilaaa/golang:1.17"
+  }
+]

@@ -1,0 +1,10 @@
+[
+  {
+    "sources": [
+      {
+        "addr": "golang:1.17@sha256:d860e175278037ee2429fecb1150bf10635ff4488c5a6faf695b169bf2c0868f",
+        "new_tag": "registry.self/weilaaa/golang:1.17-amd64"
+      }
+    ]
+  }
+]

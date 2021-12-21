@@ -16,28 +16,18 @@ type brick struct {
 	// manifest generic private register like: foo.register/bar-v1.0
 	// used to combined multi digest to one manifest
 	Manifest string `json:"manifest"`
+
+	// Auto will automatically lift all images under this sources
+	// which length should equal 1
+	Auto bool `json:"auto"`
+
+	// Amend will amend remote manifest if true
+	Amend bool `json:"amend"`
 }
 
-type source struct {
-	Addr   string `json:"addr"`
-	Remark string `json:"remark"`
-	NewTag string `json:"new_tag"`
-	Skip   bool   `json:"skip"`
-}
-
-func (s *source) pull() error {
-	cmd := fmt.Sprintf("docker pull %s", s.Addr)
-	return doExec(cmd, "")
-}
-
-func (s *source) tag() error {
-	cmd := fmt.Sprintf("docker tag %s %s", s.Addr, s.NewTag)
-	return doExec(cmd, "")
-}
-
-func (s *source) push() error {
-	cmd := fmt.Sprintf("docker push %s", s.NewTag)
-	return doExec(cmd, "")
+// pushManifest would failed if remote register already had such manifest
+func (b *brick) pushManifest() cmdInstruction {
+	return makeCmdInstruction("docker manifest push %s", b.Manifest)
 }
 
 func (b *brick) createManifest() error {
@@ -55,46 +45,23 @@ func (b *brick) createManifest() error {
 		return fmt.Errorf("digest less than 1, can not create manifest %s", b.Manifest)
 	}
 
-	cmd := fmt.Sprintf("docker manifest create %s%s", b.Manifest, digests)
-	return doExec(cmd, "")
-}
+	var err error
 
-// pushManifest would failed if remote register already had such manifest
-func (b *brick) pushManifest() error {
-	cmd := fmt.Sprintf("docker manifest push %s", b.Manifest)
-	return doExec(cmd, "")
+	if b.Amend {
+		err = makeCmdInstruction("docker manifest create %s%s --amend", b.Manifest, digests).doExec()
+	} else {
+		err = makeCmdInstruction("docker manifest create %s%s", b.Manifest, digests).doExec()
+	}
+
+	return err
 }
 
 func (b *brick) moving() error {
-	if len(b.Sources) == 1 {
+	if len(b.Sources) == 1 && b.Auto == false {
 		return singleMove(b.Sources[0])
 	}
 
 	return multiMove(b)
-}
-
-// singleMove just do one image lift
-func singleMove(s *source) error {
-	if s.Skip {
-		return nil
-	}
-
-	err := s.pull()
-	if err != nil {
-		return fmt.Errorf("pull image %v failed: %v", s.Addr, err)
-	}
-
-	err = s.tag()
-	if err != nil {
-		return fmt.Errorf("tag image %v failed: %v", s.Addr, err)
-	}
-
-	err = s.push()
-	if err != nil {
-		return fmt.Errorf("push image %v to %v failed: %v", s.Addr, s.NewTag, err)
-	}
-
-	return nil
 }
 
 // multiMove can move multi images at same time
@@ -103,6 +70,14 @@ func singleMove(s *source) error {
 func multiMove(b *brick) error {
 	var err error
 
+	// do auto multi move if need
+	if b.Auto && len(b.Sources) == 1 {
+		if err = autoBuildSources(b); err != nil {
+			return err
+		}
+	}
+
+	// do truly images move 1 by 1
 	for _, s := range b.Sources {
 		err = singleMove(s)
 		if err != nil {
@@ -116,11 +91,72 @@ func multiMove(b *brick) error {
 			return err
 		}
 
-		err = b.pushManifest()
+		err = b.pushManifest().doExec()
 		if err != nil {
 			return err
 		}
 	}
 
 	return nil
+}
+
+// autoBuildSources automatically build resources corresponding to all digest under given manifest
+func autoBuildSources(b *brick) error {
+	if len(b.Sources) != 1 {
+		return fmt.Errorf("len(sources) when auto move must be 1")
+	}
+
+	s := b.Sources[0]
+
+	if s.Skip {
+		return nil
+	}
+
+	m := manifest{images: make([]image, 0)}
+
+	// query manifest of given image
+	err := s.inspect().doExecInto(&m.images)
+	if err != nil {
+		return err
+	}
+
+	// rebuild sources for each digest
+	rebuildSource(b, &m)
+
+	return nil
+}
+
+type manifest struct {
+	images []image
+}
+
+type image struct {
+	Ref              string      `json:"Ref"`
+	Descriptor       descriptor  `json:"Descriptor"`
+	SchemaV2Manifest interface{} `json:"SchemaV2Manifest"`
+}
+
+type descriptor struct {
+	MediaType string                 `json:"mediaType"`
+	Digest    string                 `json:"digest"`
+	Size      int                    `json:"size"`
+	Platform  map[string]interface{} `json:"platform"`
+}
+
+func rebuildSource(b *brick, m *manifest) {
+	sources := make([]*source, 0, len(m.images))
+
+	for i, img := range m.images {
+		arch, ok := img.Descriptor.Platform["architecture"]
+		if !ok {
+			continue
+		}
+
+		s := &source{}
+		s.Addr = img.Ref
+		s.NewTag = fmt.Sprintf("%v-%v-%v", b.Manifest, i, arch)
+		sources = append(sources, s)
+	}
+
+	b.Sources = sources
 }
