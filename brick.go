@@ -32,7 +32,7 @@ type brick struct {
 func (b *brick) pushManifest() cmdInstruction {
 	cmdInst := makeCmdInstruction("docker manifest push %s", b.Manifest)
 	if b.Insecure {
-		cmdInst.AppendOption("--insecure")
+		cmdInst = cmdInst.AppendOption("--insecure")
 	}
 	return cmdInst
 }
@@ -55,11 +55,11 @@ func (b *brick) createManifest() error {
 	cmdInst := makeCmdInstruction("docker manifest create %s%s", b.Manifest, digests)
 
 	if b.Amend {
-		cmdInst.AppendOption("--amend")
+		cmdInst = cmdInst.AppendOption("--amend")
 	}
 
 	if b.Insecure {
-		cmdInst.AppendOption("--insecure")
+		cmdInst = cmdInst.AppendOption("--insecure")
 	}
 
 	return cmdInst.doExec()
@@ -125,7 +125,7 @@ func autoBuildSources(b *brick) error {
 
 	cmdInst := s.inspect()
 	if b.Insecure {
-		cmdInst.AppendOption("--insecure")
+		cmdInst = cmdInst.AppendOption("--insecure")
 	}
 
 	// query manifest of given image

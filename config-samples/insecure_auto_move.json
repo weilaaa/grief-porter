@@ -1,0 +1,13 @@
+[
+  {
+    "sources": [
+      {
+        "addr": "nginx:latest"
+      }
+    ],
+    "amend": true,
+    "auto": true,
+    "insecure": true,
+    "manifest": "hub.c.163.com/kubecube/test-in-one:nginx-latest"
+  }
+]

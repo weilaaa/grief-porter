@@ -1,10 +1,10 @@
 GOOS ?= $(shell go env GOOS)
 
 run-serial:
-	go run . --config=./config.json
+	go run . --config=${CONFIG}
 
 run-parallels:
-	go run . --parallels --config=./config.json
+	go run . --parallels --config=${CONFIG}
 
 build:
 	CGO_ENABLED=0 GOOS=$(GOOS) GO111MODULE=on go build -a -o goporter .

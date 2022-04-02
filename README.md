@@ -21,7 +21,9 @@ goporter --config=./config.json
 ## Config
 
 - auto move all images under given manifest
-> amend means 'docker create manifest A B C --amend'
+> *amend* means 'docker create manifest A B C --amend'
+
+> *insecure* means add '--insecure' with 'docker manifest'
 ```json
 [
   {
@@ -32,6 +34,7 @@ goporter --config=./config.json
     ],
     "amend": true,
     "auto": true,
+    "insecure": true,
     "manifest": "registry.self/weilaaa/golang:1.17"
   }
 ]
@@ -80,7 +83,7 @@ goporter --config=./config.json
 ```
 
 - move single image to another place without creating manifest
-> you can remark what ever you want in config json file
+> you can remark whatever you want in config json file, but it effects nothing
 ```json
 [
   {
