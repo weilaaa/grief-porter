@@ -29,13 +29,13 @@ goporter --config=./config.json
   {
     "sources": [
       {
-        "addr": "golang:1.17"
+        "addr": "nginx:latest"
       }
     ],
     "amend": true,
     "auto": true,
     "insecure": true,
-    "manifest": "registry.self/weilaaa/golang:1.17"
+    "manifest": "registry.self/weilaaa/nginx:latest"
   }
 ]
 ```

@@ -8,6 +8,6 @@
     "amend": true,
     "auto": true,
     "insecure": true,
-    "manifest": "hub.c.163.com/kubecube/test-in-one:nginx-latest"
+    "manifest": "registry.self/weilaaa/nginx:latest"
   }
 ]
