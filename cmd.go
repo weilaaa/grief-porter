@@ -16,6 +16,10 @@ func (c cmdInstruction) String() string {
 	return string(c)
 }
 
+func (c cmdInstruction) AppendOption(opt string) cmdInstruction {
+	return c + " " + cmdInstruction(opt)
+}
+
 func makeCmdInstruction(format string, a ...interface{}) cmdInstruction {
 	return cmdInstruction(fmt.Sprintf(format, a...))
 }

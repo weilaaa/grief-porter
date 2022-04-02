@@ -23,11 +23,18 @@ type brick struct {
 
 	// Amend will amend remote manifest if true
 	Amend bool `json:"amend"`
+
+	// Insecure can access a insecure remote registry
+	Insecure bool `json:"insecure"`
 }
 
 // pushManifest would failed if remote register already had such manifest
 func (b *brick) pushManifest() cmdInstruction {
-	return makeCmdInstruction("docker manifest push %s", b.Manifest)
+	cmdInst := makeCmdInstruction("docker manifest push %s", b.Manifest)
+	if b.Insecure {
+		cmdInst.AppendOption("--insecure")
+	}
+	return cmdInst
 }
 
 func (b *brick) createManifest() error {
@@ -45,15 +52,17 @@ func (b *brick) createManifest() error {
 		return fmt.Errorf("digest less than 1, can not create manifest %s", b.Manifest)
 	}
 
-	var err error
+	cmdInst := makeCmdInstruction("docker manifest create %s%s", b.Manifest, digests)
 
 	if b.Amend {
-		err = makeCmdInstruction("docker manifest create %s%s --amend", b.Manifest, digests).doExec()
-	} else {
-		err = makeCmdInstruction("docker manifest create %s%s", b.Manifest, digests).doExec()
+		cmdInst.AppendOption("--amend")
 	}
 
-	return err
+	if b.Insecure {
+		cmdInst.AppendOption("--insecure")
+	}
+
+	return cmdInst.doExec()
 }
 
 func (b *brick) moving() error {
@@ -114,8 +123,13 @@ func autoBuildSources(b *brick) error {
 
 	m := manifest{images: make([]image, 0)}
 
+	cmdInst := s.inspect()
+	if b.Insecure {
+		cmdInst.AppendOption("--insecure")
+	}
+
 	// query manifest of given image
-	err := s.inspect().doExecInto(&m.images)
+	err := cmdInst.doExecInto(&m.images)
 	if err != nil {
 		return err
 	}
